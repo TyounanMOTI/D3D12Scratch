@@ -11,17 +11,28 @@
     <Filter Include="moti">
       <UniqueIdentifier>{c52af4f8-62f5-4c26-9d77-bc668afd72d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Universal Windows">
+      <UniqueIdentifier>{e661308b-3e4c-41ac-9ad3-45d410182d92}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp" />
-    <ClCompile Include="UWApp.cpp" />
+    <ClCompile Include="UWApp.cpp">
+      <Filter>Universal Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Universal Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h" />
     <ClInclude Include="moti\windows\utility.h">
       <Filter>moti</Filter>
     </ClInclude>
-    <ClInclude Include="UWApp.h" />
+    <ClInclude Include="UWApp.h">
+      <Filter>Universal Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Universal Windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">
@@ -47,9 +58,13 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <AppxManifest Include="Package.appxmanifest" />
+    <AppxManifest Include="Package.appxmanifest">
+      <Filter>Universal Windows</Filter>
+    </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Scratch_TemporaryKey.pfx" />
+    <None Include="Scratch_TemporaryKey.pfx">
+      <Filter>Universal Windows</Filter>
+    </None>
   </ItemGroup>
 </Project>
