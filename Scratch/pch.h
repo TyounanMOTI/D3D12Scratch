@@ -9,4 +9,4 @@
 #include <ppltasks.h>
 #include <wrl/client.h>
 #include <d3d12.h>
-#include <dxgi1_2.h>
+#include <dxgi1_4.h>

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <pch.h>
+
 namespace Scratch {
 	ref class UWApp sealed : public Windows::ApplicationModel::Core::IFrameworkView
 	{
@@ -13,6 +15,7 @@ namespace Scratch {
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D12Device> d3d_device_;
+		Microsoft::WRL::ComPtr<IDXGIFactory4> dxgi_factory_;
 	};
 
 	ref class UWAppViewSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource

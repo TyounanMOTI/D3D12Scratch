@@ -27,6 +27,9 @@ void Scratch::UWApp::Initialize(Windows::ApplicationModel::Core::CoreApplication
 	}
 #endif
 
+	// create DXGI Factory
+	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&dxgi_factory_)));
+
 	// create D3D12 device
 	ThrowIfFailed(
 		D3D12CreateDevice(
