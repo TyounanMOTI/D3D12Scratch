@@ -28,12 +28,11 @@ void Scratch::UWApp::Initialize(Windows::ApplicationModel::Core::CoreApplication
 #endif
 
 	// create D3D12 device
-	ComPtr<ID3D12Device> d3d_device;
 	ThrowIfFailed(
 		D3D12CreateDevice(
 			nullptr,					// use default adapter
 			D3D_FEATURE_LEVEL_12_0,
-			IID_PPV_ARGS(&d3d_device)
+			IID_PPV_ARGS(&d3d_device_)
 			)
 		);
 
@@ -42,13 +41,13 @@ void Scratch::UWApp::Initialize(Windows::ApplicationModel::Core::CoreApplication
 	D3D12_COMMAND_QUEUE_DESC queue_desc = {};
 	queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-	ThrowIfFailed(d3d_device->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(&command_queue)));
+	ThrowIfFailed(d3d_device_->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(&command_queue)));
 
 	constexpr UINT num_frames = 3; // use triple buffering
 	ComPtr<ID3D12CommandAllocator> command_allocators[num_frames];
 	for (UINT n = 0; n < num_frames; n++) {
 		ThrowIfFailed(
-			d3d_device->CreateCommandAllocator(
+			d3d_device_->CreateCommandAllocator(
 				D3D12_COMMAND_LIST_TYPE_DIRECT,
 				IID_PPV_ARGS(&command_allocators[n]))
 			);
@@ -59,7 +58,7 @@ void Scratch::UWApp::Initialize(Windows::ApplicationModel::Core::CoreApplication
 	UINT64 fence_values[num_frames];
 	ComPtr<ID3D12Fence> fence;
 	ThrowIfFailed(
-		d3d_device->CreateFence(
+		d3d_device_->CreateFence(
 			fence_values[current_frame],
 			D3D12_FENCE_FLAG_NONE,
 			IID_PPV_ARGS(&fence))

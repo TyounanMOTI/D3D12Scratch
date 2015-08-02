@@ -10,6 +10,9 @@ namespace Scratch {
 		virtual void Load(Platform::String ^entryPoint);
 		virtual void Run();
 		virtual void Uninitialize();
+
+	private:
+		Microsoft::WRL::ComPtr<ID3D12Device> d3d_device_;
 	};
 
 	ref class UWAppViewSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource
