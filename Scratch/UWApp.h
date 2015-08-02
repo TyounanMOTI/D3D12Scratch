@@ -13,9 +13,22 @@ namespace Scratch {
 		virtual void Run();
 		virtual void Uninitialize();
 
+		void CreateDeviceResources();
+		void CreateWindowDependentResources();
+
 	private:
+		static const UINT num_frames_ = 3; // use triple buffering
+		UINT current_frame_;
+		UINT64 fence_values_[num_frames_];
+
+		Platform::Agile<Windows::UI::Core::CoreWindow> window_;
 		Microsoft::WRL::ComPtr<ID3D12Device> d3d_device_;
 		Microsoft::WRL::ComPtr<IDXGIFactory4> dxgi_factory_;
+		Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue_;
+		Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
+		Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain_;
+		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> render_target_view_heap_;
+		Microsoft::WRL::ComPtr<ID3D12Resource> render_targets_[num_frames_];
 	};
 
 	ref class UWAppViewSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource
