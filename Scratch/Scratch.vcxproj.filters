@@ -8,18 +8,20 @@
       <UniqueIdentifier>1f55d5e3-a206-4218-b65d-e344238db0c6</UniqueIdentifier>
       <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
     </Filter>
+    <Filter Include="moti">
+      <UniqueIdentifier>{c52af4f8-62f5-4c26-9d77-bc668afd72d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="App.xaml.cpp" />
-    <ClCompile Include="MainPage.xaml.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="App.cpp" />
+    <ClCompile Include="UWApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="App.xaml.h" />
-    <ClInclude Include="MainPage.xaml.h" />
-    <ClInclude Include="App.h" />
+    <ClInclude Include="moti\windows\utility.h">
+      <Filter>moti</Filter>
+    </ClInclude>
+    <ClInclude Include="UWApp.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">
