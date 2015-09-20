@@ -61,7 +61,7 @@ void Scratch::App::CreateDeviceResources()
 	ThrowIfFailed(
 		D3D12CreateDevice(
 			nullptr,					// use default adapter
-			D3D_FEATURE_LEVEL_12_0,
+			D3D_FEATURE_LEVEL_12_1,
 			IID_PPV_ARGS(&d3d_device_)
 			)
 		);
