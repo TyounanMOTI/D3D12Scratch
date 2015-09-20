@@ -165,7 +165,7 @@ void Scratch::App::CreateWindowDependentResources()
 
 			render_target_view_desc.ptr += render_target_view_desc_size_;
 
-			WCHAR name[25];
+			WCHAR name[25] = L"";
 			swprintf_s(name, L"Render Target %d", n);
 			render_targets_[n]->SetName(name);
 		}
