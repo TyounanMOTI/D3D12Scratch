@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "UWApp.h"
+#include "App.h"
 #include "moti/windows/utility.h"
 
 using namespace Windows::ApplicationModel;
@@ -10,39 +10,39 @@ using namespace moti::windows::utility;
 [Platform::MTAThread]
 int main(Platform::Array<Platform::String^>^)
 {
-	auto UWApp = ref new Scratch::UWAppViewSource();
-	CoreApplication::Run(UWApp);
+	auto app = ref new Scratch::AppViewSource();
+	CoreApplication::Run(app);
 	return 0;
 }
 
-void Scratch::UWApp::Initialize(Windows::ApplicationModel::Core::CoreApplicationView ^ApplicationView)
+void Scratch::App::Initialize(Windows::ApplicationModel::Core::CoreApplicationView ^ApplicationView)
 {
 	window_ = ApplicationView->CoreWindow;
 }
 
-void Scratch::UWApp::SetWindow(Windows::UI::Core::CoreWindow ^window)
+void Scratch::App::SetWindow(Windows::UI::Core::CoreWindow ^window)
 {
 	window_ = window;
 
 	// TODO: handle window changed
 }
 
-void Scratch::UWApp::Load(Platform::String ^entryPoint)
+void Scratch::App::Load(Platform::String ^entryPoint)
 {
 	// initialize D3D12
 	CreateDeviceResources();
 	CreateWindowDependentResources();
 }
 
-void Scratch::UWApp::Run()
+void Scratch::App::Run()
 {
 }
 
-void Scratch::UWApp::Uninitialize()
+void Scratch::App::Uninitialize()
 {
 }
 
-void Scratch::UWApp::CreateDeviceResources()
+void Scratch::App::CreateDeviceResources()
 {
 	// enable debug layer
 #if defined(_DEBUG)
@@ -95,7 +95,7 @@ void Scratch::UWApp::CreateDeviceResources()
 	HANDLE fence_event = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
 }
 
-void Scratch::UWApp::CreateWindowDependentResources()
+void Scratch::App::CreateWindowDependentResources()
 {
 	// assume window is valid
 	assert(window_ != nullptr);
@@ -172,7 +172,7 @@ void Scratch::UWApp::CreateWindowDependentResources()
 	}
 }
 
-Windows::ApplicationModel::Core::IFrameworkView ^ Scratch::UWAppViewSource::CreateView()
+Windows::ApplicationModel::Core::IFrameworkView ^ Scratch::AppViewSource::CreateView()
 {
-	return ref new UWApp();
+	return ref new App();
 }

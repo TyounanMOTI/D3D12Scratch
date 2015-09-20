@@ -3,7 +3,7 @@
 #include <pch.h>
 
 namespace Scratch {
-	ref class UWApp sealed : public Windows::ApplicationModel::Core::IFrameworkView
+	ref class App sealed : public Windows::ApplicationModel::Core::IFrameworkView
 	{
 	public:
 		// Inherited via IFrameworkView
@@ -31,7 +31,7 @@ namespace Scratch {
 		Microsoft::WRL::ComPtr<ID3D12Resource> render_targets_[num_frames_];
 	};
 
-	ref class UWAppViewSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource
+	ref class AppViewSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource
 	{
 	public:
 		// Inherited via IFrameworkViewSource

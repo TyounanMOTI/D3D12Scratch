@@ -16,10 +16,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="UWApp.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>Universal Windows</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="App.cpp">
       <Filter>Universal Windows</Filter>
     </ClCompile>
   </ItemGroup>
@@ -27,10 +27,10 @@
     <ClInclude Include="moti\windows\utility.h">
       <Filter>moti</Filter>
     </ClInclude>
-    <ClInclude Include="UWApp.h">
+    <ClInclude Include="pch.h">
       <Filter>Universal Windows</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
+    <ClInclude Include="App.h">
       <Filter>Universal Windows</Filter>
     </ClInclude>
   </ItemGroup>
