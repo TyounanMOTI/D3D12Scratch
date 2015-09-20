@@ -98,7 +98,7 @@ void Scratch::App::CreateDeviceResources()
 void Scratch::App::CreateWindowDependentResources()
 {
 	// assume window is valid
-	assert(window_ != nullptr);
+	assert(!(window_ == nullptr));
 
 	// assume no need to wait GPU
 
