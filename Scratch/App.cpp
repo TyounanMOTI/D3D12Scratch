@@ -4,6 +4,7 @@
 
 using namespace Windows::ApplicationModel;
 using namespace Windows::ApplicationModel::Core;
+using namespace Windows::UI::Core;
 using namespace Microsoft::WRL;
 using namespace moti::windows::utility;
 
@@ -36,6 +37,9 @@ void Scratch::App::Load(Platform::String ^entryPoint)
 
 void Scratch::App::Run()
 {
+	while (true) {
+		CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+	}
 }
 
 void Scratch::App::Uninitialize()
