@@ -77,25 +77,6 @@ void Scratch::App::Load(Platform::String ^entryPoint)
 		}
 	}
 
-	// create synchronization objects
-	{
-		ZeroMemory(fence_values_, sizeof(fence_values_));
-		ComPtr<ID3D12Fence> fence;
-		ThrowIfFailed(
-			d3d_device_->CreateFence(
-				fence_values_[current_frame_],
-				D3D12_FENCE_FLAG_NONE,
-				IID_PPV_ARGS(&fence_))
-			);
-		fence_values_[current_frame_]++;
-	}
-
-	{
-		HANDLE fence_event = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
-	}
-
-	// assume no need to wait GPU
-
 	// get size of window
 	{
 		// TODO:
@@ -170,6 +151,26 @@ void Scratch::App::Load(Platform::String ^entryPoint)
 			render_targets_[n]->SetName(name);
 		}
 	}
+
+	// create synchronization objects
+	{
+		current_frame_ = swap_chain_->GetCurrentBackBufferIndex();
+		{
+			ZeroMemory(fence_values_, sizeof(fence_values_));
+			ComPtr<ID3D12Fence> fence;
+			ThrowIfFailed(
+				d3d_device_->CreateFence(
+					fence_values_[current_frame_],
+					D3D12_FENCE_FLAG_NONE,
+					IID_PPV_ARGS(&fence_))
+				);
+			fence_values_[current_frame_]++;
+		}
+		{
+			HANDLE fence_event = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
+		}
+	}
+
 }
 
 void Scratch::App::Run()
