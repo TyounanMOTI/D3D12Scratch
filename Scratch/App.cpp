@@ -66,12 +66,11 @@ void Scratch::App::Load(Platform::String ^entryPoint)
 
 	// create command allocator
 	{
-		ComPtr<ID3D12CommandAllocator> command_allocators[num_frames_];
 		for (UINT n = 0; n < num_frames_; n++) {
 			ThrowIfFailed(
 				d3d_device_->CreateCommandAllocator(
 					D3D12_COMMAND_LIST_TYPE_DIRECT,
-					IID_PPV_ARGS(&command_allocators[n])
+					IID_PPV_ARGS(&command_allocators_[n])
 				)
 			);
 		}
@@ -171,6 +170,20 @@ void Scratch::App::Load(Platform::String ^entryPoint)
 		}
 	}
 
+	// create graphics command list
+	{
+		ThrowIfFailed(
+			d3d_device_->CreateCommandList(
+				0,
+				D3D12_COMMAND_LIST_TYPE_DIRECT,
+				command_allocators_[current_frame_].Get(),
+				nullptr,
+				IID_PPV_ARGS(&command_list_)
+			)
+		);
+	}
+
+	ThrowIfFailed(command_list_->Close());
 }
 
 void Scratch::App::Run()

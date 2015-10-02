@@ -22,6 +22,8 @@ namespace Scratch {
 		Microsoft::WRL::ComPtr<ID3D12Device> d3d_device_;
 		Microsoft::WRL::ComPtr<IDXGIFactory4> dxgi_factory_;
 		Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue_;
+		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocators_[num_frames_];
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> command_list_;
 		Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
 		Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain_;
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> render_target_view_heap_;
