@@ -2,7 +2,9 @@
 #include "App.h"
 #include "moti/windows/utility.h"
 
+using namespace Windows::Foundation;
 using namespace Windows::ApplicationModel;
+using namespace Windows::ApplicationModel::Activation;
 using namespace Windows::ApplicationModel::Core;
 using namespace Windows::UI::Core;
 using namespace Microsoft::WRL;
@@ -16,9 +18,12 @@ int main(Platform::Array<Platform::String^>^)
 	return 0;
 }
 
-void Scratch::App::Initialize(Windows::ApplicationModel::Core::CoreApplicationView ^ApplicationView)
+void Scratch::App::Initialize(Windows::ApplicationModel::Core::CoreApplicationView ^applicationView)
 {
-	window_ = ApplicationView->CoreWindow;
+	window_ = applicationView->CoreWindow;
+
+	applicationView->Activated +=
+		ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &App::OnActivated);
 }
 
 void Scratch::App::SetWindow(Windows::UI::Core::CoreWindow ^window)
@@ -133,7 +138,7 @@ void Scratch::App::Load(Platform::String ^entryPoint)
 		D3D12_CPU_DESCRIPTOR_HANDLE render_target_view_desc =
 			render_target_view_heap_->GetCPUDescriptorHandleForHeapStart();
 
-		auto render_target_view_desc_size_ =
+		render_target_view_desc_size_ =
 			d3d_device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 		for (UINT n = 0; n < num_frames_; n++) {
@@ -186,6 +191,12 @@ void Scratch::App::Load(Platform::String ^entryPoint)
 	ThrowIfFailed(command_list_->Close());
 }
 
+void Scratch::App::OnActivated(CoreApplicationView ^ applicationView, IActivatedEventArgs ^ args)
+{
+	// need to activate to dismiss splash icon
+	CoreWindow::GetForCurrentThread()->Activate();
+}
+
 void Scratch::App::Render()
 {
 	// assume that command allocator of "current frame" is executed.
@@ -206,7 +217,10 @@ void Scratch::App::Render()
 		command_list_->ResourceBarrier(1, &barrier);
 	}
 
-	
+	D3D12_CPU_DESCRIPTOR_HANDLE render_target_view_handle = { render_target_view_heap_->GetCPUDescriptorHandleForHeapStart().ptr + current_frame_ * render_target_view_desc_size_ };
+
+	const float clear_color[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+	command_list_->ClearRenderTargetView(render_target_view_handle, clear_color, 0, nullptr);
 
 	// Indicate that the back buffer will now be used to present
 	{

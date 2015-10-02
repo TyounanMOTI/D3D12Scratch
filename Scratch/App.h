@@ -13,6 +13,10 @@ namespace Scratch {
 		virtual void Run();
 		virtual void Uninitialize();
 
+		void OnActivated(
+			Windows::ApplicationModel::Core::CoreApplicationView^ applicationView,
+			Windows::ApplicationModel::Activation::IActivatedEventArgs^ args);
+
 		void Render();
 
 	private:
@@ -20,6 +24,8 @@ namespace Scratch {
 		UINT current_frame_;
 		UINT64 fence_values_[num_frames_];
 		HANDLE fence_event_;
+
+		UINT render_target_view_desc_size_;
 
 		Platform::Agile<Windows::UI::Core::CoreWindow> window_;
 		Microsoft::WRL::ComPtr<ID3D12Device> d3d_device_;
