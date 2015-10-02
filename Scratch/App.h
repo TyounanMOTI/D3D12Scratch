@@ -13,9 +13,6 @@ namespace Scratch {
 		virtual void Run();
 		virtual void Uninitialize();
 
-		void CreateDeviceResources();
-		void CreateWindowDependentResources();
-
 	private:
 		static const UINT num_frames_ = 3; // use triple buffering
 		UINT current_frame_;

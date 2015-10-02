@@ -30,24 +30,6 @@ void Scratch::App::SetWindow(Windows::UI::Core::CoreWindow ^window)
 
 void Scratch::App::Load(Platform::String ^entryPoint)
 {
-	// initialize D3D12
-	CreateDeviceResources();
-	CreateWindowDependentResources();
-}
-
-void Scratch::App::Run()
-{
-	while (true) {
-		CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
-	}
-}
-
-void Scratch::App::Uninitialize()
-{
-}
-
-void Scratch::App::CreateDeviceResources()
-{
 	// enable debug layer
 #if defined(_DEBUG)
 	{
@@ -59,86 +41,100 @@ void Scratch::App::CreateDeviceResources()
 #endif
 
 	// create DXGI Factory
-	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&dxgi_factory_)));
+	{
+		ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&dxgi_factory_)));
+	}
 
 	// create D3D12 device
-	ThrowIfFailed(
-		D3D12CreateDevice(
-			nullptr,					// use default adapter
-			D3D_FEATURE_LEVEL_12_1,
-			IID_PPV_ARGS(&d3d_device_)
+	{
+		ThrowIfFailed(
+			D3D12CreateDevice(
+				nullptr,					// use default adapter
+				D3D_FEATURE_LEVEL_12_1,
+				IID_PPV_ARGS(&d3d_device_)
 			)
 		);
+	}
 
 	// create command queue
-	D3D12_COMMAND_QUEUE_DESC queue_desc = {};
-	queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-	queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-	ThrowIfFailed(d3d_device_->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(&command_queue_)));
+	{
+		D3D12_COMMAND_QUEUE_DESC queue_desc = {};
+		queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+		queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+		ThrowIfFailed(d3d_device_->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(&command_queue_)));
+	}
 
-	ComPtr<ID3D12CommandAllocator> command_allocators[num_frames_];
-	for (UINT n = 0; n < num_frames_; n++) {
-		ThrowIfFailed(
-			d3d_device_->CreateCommandAllocator(
-				D3D12_COMMAND_LIST_TYPE_DIRECT,
-				IID_PPV_ARGS(&command_allocators[n]))
+	// create command allocator
+	{
+		ComPtr<ID3D12CommandAllocator> command_allocators[num_frames_];
+		for (UINT n = 0; n < num_frames_; n++) {
+			ThrowIfFailed(
+				d3d_device_->CreateCommandAllocator(
+					D3D12_COMMAND_LIST_TYPE_DIRECT,
+					IID_PPV_ARGS(&command_allocators[n])
+				)
 			);
+		}
 	}
 
 	// create synchronization objects
-	ZeroMemory(fence_values_, sizeof(fence_values_));
-	ComPtr<ID3D12Fence> fence;
-	ThrowIfFailed(
-		d3d_device_->CreateFence(
-			fence_values_[current_frame_],
-			D3D12_FENCE_FLAG_NONE,
-			IID_PPV_ARGS(&fence_))
-		);
-	fence_values_[current_frame_]++;
+	{
+		ZeroMemory(fence_values_, sizeof(fence_values_));
+		ComPtr<ID3D12Fence> fence;
+		ThrowIfFailed(
+			d3d_device_->CreateFence(
+				fence_values_[current_frame_],
+				D3D12_FENCE_FLAG_NONE,
+				IID_PPV_ARGS(&fence_))
+			);
+		fence_values_[current_frame_]++;
+	}
 
-	HANDLE fence_event = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
-}
-
-void Scratch::App::CreateWindowDependentResources()
-{
-	// assume window is valid
-	assert(!(window_ == nullptr));
+	{
+		HANDLE fence_event = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
+	}
 
 	// assume no need to wait GPU
 
 	// get size of window
-	// TODO:
-	// - DPI
-	// - Orientation
-	Windows::Foundation::Size logical_size{ window_->Bounds.Width, window_->Bounds.Height };
+	{
+		// TODO:
+		// - DPI
+		// - Orientation
+		// assume window is valid
+		assert(!(window_ == nullptr));
+		Windows::Foundation::Size logical_size{ window_->Bounds.Width, window_->Bounds.Height };
 
-	// create swap chain
-	DXGI_SWAP_CHAIN_DESC1 swap_chain_desc = {};
-	swap_chain_desc.Width = lround(logical_size.Width);
-	swap_chain_desc.Height = lround(logical_size.Height);
-	swap_chain_desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-	swap_chain_desc.Stereo = false;
-	swap_chain_desc.SampleDesc.Count = 1;		// Don't use multi-sampling
-	swap_chain_desc.SampleDesc.Quality = 0;
-	swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swap_chain_desc.BufferCount = num_frames_;
-	swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	swap_chain_desc.Flags = 0;
-	swap_chain_desc.Scaling = DXGI_SCALING_NONE;
-	swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
+		// create swap chain
+		{
+			DXGI_SWAP_CHAIN_DESC1 swap_chain_desc = {};
+			swap_chain_desc.Width = lround(logical_size.Width);
+			swap_chain_desc.Height = lround(logical_size.Height);
+			swap_chain_desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+			swap_chain_desc.Stereo = false;
+			swap_chain_desc.SampleDesc.Count = 1;		// Don't use multi-sampling
+			swap_chain_desc.SampleDesc.Quality = 0;
+			swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+			swap_chain_desc.BufferCount = num_frames_;
+			swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+			swap_chain_desc.Flags = 0;
+			swap_chain_desc.Scaling = DXGI_SCALING_NONE;
+			swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
 
-	ComPtr<IDXGISwapChain1> swap_chain;
-	ThrowIfFailed(
-		dxgi_factory_->CreateSwapChainForCoreWindow(
-			command_queue_.Get(),
-			reinterpret_cast<IUnknown*>(window_.Get()),
-			&swap_chain_desc,
-			nullptr,
-			&swap_chain
-			)
-		);
+			ComPtr<IDXGISwapChain1> swap_chain;
+			ThrowIfFailed(
+				dxgi_factory_->CreateSwapChainForCoreWindow(
+					command_queue_.Get(),
+					reinterpret_cast<IUnknown*>(window_.Get()),
+					&swap_chain_desc,
+					nullptr,
+					&swap_chain
+					)
+				);
 
-	ThrowIfFailed(swap_chain.As(&swap_chain_));
+			ThrowIfFailed(swap_chain.As(&swap_chain_));
+		}
+	}
 
 	// create render target view
 	{
@@ -151,7 +147,7 @@ void Scratch::App::CreateWindowDependentResources()
 				&render_target_view_heap_desc,
 				IID_PPV_ARGS(&render_target_view_heap_)
 				)
-		);
+			);
 		render_target_view_heap_->SetName(L"Render Target View Descriptor Heap");
 
 		D3D12_CPU_DESCRIPTOR_HANDLE render_target_view_desc =
@@ -174,6 +170,17 @@ void Scratch::App::CreateWindowDependentResources()
 			render_targets_[n]->SetName(name);
 		}
 	}
+}
+
+void Scratch::App::Run()
+{
+	while (true) {
+		CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+	}
+}
+
+void Scratch::App::Uninitialize()
+{
 }
 
 Windows::ApplicationModel::Core::IFrameworkView ^ Scratch::AppViewSource::CreateView()
