@@ -13,10 +13,13 @@ namespace Scratch {
 		virtual void Run();
 		virtual void Uninitialize();
 
+		void Render();
+
 	private:
 		static const UINT num_frames_ = 3; // use triple buffering
 		UINT current_frame_;
 		UINT64 fence_values_[num_frames_];
+		HANDLE fence_event_;
 
 		Platform::Agile<Windows::UI::Core::CoreWindow> window_;
 		Microsoft::WRL::ComPtr<ID3D12Device> d3d_device_;
@@ -28,6 +31,7 @@ namespace Scratch {
 		Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain_;
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> render_target_view_heap_;
 		Microsoft::WRL::ComPtr<ID3D12Resource> render_targets_[num_frames_];
+		Microsoft::WRL::ComPtr<ID3D12PipelineState> pipeline_state_;
 	};
 
 	ref class AppViewSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource

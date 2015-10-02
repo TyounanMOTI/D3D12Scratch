@@ -166,7 +166,7 @@ void Scratch::App::Load(Platform::String ^entryPoint)
 			fence_values_[current_frame_]++;
 		}
 		{
-			HANDLE fence_event = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
+			fence_event_ = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
 		}
 	}
 
@@ -186,10 +186,71 @@ void Scratch::App::Load(Platform::String ^entryPoint)
 	ThrowIfFailed(command_list_->Close());
 }
 
+void Scratch::App::Render()
+{
+	// assume that command allocator of "current frame" is executed.
+	{
+		ThrowIfFailed(command_allocators_[current_frame_]->Reset());
+		ThrowIfFailed(command_list_->Reset(command_allocators_[current_frame_].Get(), pipeline_state_.Get()));
+	}
+
+	// Indicate that the back buffer will be used as a render target.
+	{
+		D3D12_RESOURCE_BARRIER barrier;
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		barrier.Transition.pResource = render_targets_[current_frame_].Get();
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		command_list_->ResourceBarrier(1, &barrier);
+	}
+
+	
+
+	// Indicate that the back buffer will now be used to present
+	{
+		D3D12_RESOURCE_BARRIER barrier;
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		barrier.Transition.pResource = render_targets_[current_frame_].Get();
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		command_list_->ResourceBarrier(1, &barrier);
+	}
+
+	// Finish command list population
+	ThrowIfFailed(command_list_->Close());
+
+	// Execute command list
+	ID3D12CommandList* command_lists[] = { command_list_.Get() };
+	command_queue_->ExecuteCommandLists(_countof(command_lists), command_lists);
+
+	// Present this frame.
+	ThrowIfFailed(swap_chain_->Present(1, 0));
+
+	// Wait for previous frame
+	{
+		const auto fence = fence_values_[current_frame_];
+		ThrowIfFailed(command_queue_->Signal(fence_.Get(), fence));
+		fence_values_[current_frame_]++;
+
+		// wait until the previous frame is finished
+		if (fence_->GetCompletedValue() < fence) {
+			ThrowIfFailed(fence_->SetEventOnCompletion(fence, fence_event_));
+			WaitForSingleObject(fence_event_, INFINITE);
+		}
+		current_frame_ = swap_chain_->GetCurrentBackBufferIndex();
+	}
+}
+
 void Scratch::App::Run()
 {
 	while (true) {
 		CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+
+		Render();
 	}
 }
 
