@@ -17,6 +17,7 @@ namespace Scratch {
 			Windows::ApplicationModel::Core::CoreApplicationView^ applicationView,
 			Windows::ApplicationModel::Activation::IActivatedEventArgs^ args);
 
+		void LoadAssets();
 		void Render();
 
 	private:
@@ -38,6 +39,7 @@ namespace Scratch {
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> render_target_view_heap_;
 		Microsoft::WRL::ComPtr<ID3D12Resource> render_targets_[num_frames_];
 		Microsoft::WRL::ComPtr<ID3D12PipelineState> pipeline_state_;
+		Microsoft::WRL::ComPtr<ID3D12RootSignature> root_signature_;
 	};
 
 	ref class AppViewSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource

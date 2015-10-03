@@ -188,7 +188,42 @@ void Scratch::App::Load(Platform::String ^entryPoint)
 		);
 	}
 
+	// Nothing to record on load.
 	ThrowIfFailed(command_list_->Close());
+
+	LoadAssets();
+}
+
+void Scratch::App::LoadAssets()
+{
+	// Create an empty root signature
+	{
+		D3D12_ROOT_SIGNATURE_DESC root_signature_desc;
+		root_signature_desc.NumParameters = 0;
+		root_signature_desc.pParameters = nullptr;
+		root_signature_desc.NumStaticSamplers = 0;
+		root_signature_desc.pStaticSamplers = nullptr;
+		root_signature_desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+		ComPtr<ID3DBlob> signature;
+		ComPtr<ID3DBlob> error;
+		ThrowIfFailed(
+			D3D12SerializeRootSignature(
+				&root_signature_desc,
+				D3D_ROOT_SIGNATURE_VERSION_1,
+				&signature,
+				&error
+			)
+		);
+		ThrowIfFailed(
+			d3d_device_->CreateRootSignature(
+				0,
+				signature->GetBufferPointer(),
+				signature->GetBufferSize(),
+				IID_PPV_ARGS(&root_signature_)
+			)
+		);
+	}
 }
 
 void Scratch::App::OnActivated(CoreApplicationView ^ applicationView, IActivatedEventArgs ^ args)
